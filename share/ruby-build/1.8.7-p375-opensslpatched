@@ -1,8 +1,8 @@
 before_install_package() {
-  if [ "$1" != "ruby-1.8.7-p374" ]; then
+  if [ "$1" != "ruby-1.8.7-p375" ]; then
     return 0
   fi
-  patch -d ${BUILD_PATH}/ruby-1.8.7-p374 -p1 <<PATCH_END
+  patch -d ${BUILD_PATH}/ruby-1.8.7-p375 -p1 <<PATCH_END
 diff --git a/ext/openssl/ossl_pkey_ec.c b/ext/openssl/ossl_pkey_ec.c
 index cbdad3f..d517b58 100644
 --- a/ext/openssl/ossl_pkey_ec.c
