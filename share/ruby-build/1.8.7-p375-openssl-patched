@@ -1,0 +1,37 @@
+before_install_package() {
+  if [ "$1" != "ruby-1.8.7-p374" ]; then
+    return 0
+  fi
+  patch -d ${BUILD_PATH}/ruby-1.8.7-p374 -p1 <<PATCH_END
+diff --git a/ext/openssl/ossl_pkey_ec.c b/ext/openssl/ossl_pkey_ec.c
+index cbdad3f..d517b58 100644
+--- a/ext/openssl/ossl_pkey_ec.c
++++ b/ext/openssl/ossl_pkey_ec.c
+@@ -757,8 +757,10 @@ static VALUE ossl_ec_group_initialize(int argc, VALUE *argv, VALUE self)
+                 method = EC_GFp_mont_method();
+             } else if (id == s_GFp_nist) {
+                 method = EC_GFp_nist_method();
++#if !defined(OPENSSL_NO_EC2M)
+             } else if (id == s_GF2m_simple) {
+                 method = EC_GF2m_simple_method();
++#endif
+             }
+
+             if (method) {
+@@ -811,8 +813,10 @@ static VALUE ossl_ec_group_initialize(int argc, VALUE *argv, VALUE self)
+
+             if (id == s_GFp) {
+                 new_curve = EC_GROUP_new_curve_GFp;
++#if !defined(OPENSSL_NO_EC2M)
+             } else if (id == s_GF2m) {
+                 new_curve = EC_GROUP_new_curve_GF2m;
++#endif
+             } else {
+                 rb_raise(rb_eArgError, "unknown symbol, must be :GFp or :GF2m");
+             }
+PATCH_END
+  echo "openssl patch applied" >&2
+}
+require_gcc
+install_svn "ruby-1.8.7-p375" "http://svn.ruby-lang.org/repos/ruby/branches/ruby_1_8_7" "44351" autoconf auto_tcltk standard
+install_package "rubygems-1.6.2" "http://production.cf.rubygems.org/rubygems/rubygems-1.6.2.tgz#cb5261818b931b5ea2cb54bc1d583c47823543fcf9682f0d6298849091c1cea7" ruby
